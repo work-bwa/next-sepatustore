@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { brands } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { BrandFormData } from "./brand.type";
+import { deleteImage } from "@/lib/storage";
 
 // Get all brands
 export async function getBrands() {
@@ -74,7 +75,30 @@ export async function updateBrand(id: string, formData: BrandFormData) {
 // Delete brand
 export async function deleteBrand(id: string) {
   try {
+    // 1. Get brand dulu untuk dapat logo URL
+    const [brand] = await db
+      .select()
+      .from(brands)
+      .where(eq(brands.id, id))
+      .limit(1);
+
+    if (!brand) {
+      return { success: false, error: "Brand not found" };
+    }
+
+    // 2. Delete brand dari database
     await db.delete(brands).where(eq(brands.id, id));
+
+    // 3. Delete image dari Supabase storage
+    if (brand.logo) {
+      try {
+        await deleteImage(brand.logo);
+      } catch (error) {
+        // Log error tapi tidak gagalkan operasi
+        console.error("Failed to delete brand image:", error);
+      }
+    }
+
     revalidatePath("/admin/brands");
     return { success: true, error: null };
   } catch (error) {
