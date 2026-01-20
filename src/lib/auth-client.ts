@@ -2,8 +2,28 @@
 import { createAuthClient } from "better-auth/react";
 import { adminClient } from "better-auth/client/plugins";
 
+// Fungsi untuk mendapatkan base URL yang benar
+const getBaseURL = () => {
+  // Di browser, gunakan relative URL agar tidak ada masalah CORS
+  if (typeof window !== "undefined") {
+    return "";
+  }
+
+  // Di server-side, gunakan URL lengkap
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL;
+  }
+
+  // Fallback untuk Vercel
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  return "http://localhost:3000";
+};
+
 export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  baseURL: getBaseURL(),
   plugins: [
     adminClient(), // Match dengan admin plugin di server
   ],

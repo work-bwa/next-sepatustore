@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "@/lib/auth-client";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +14,6 @@ import { Loader2, Mail, Lock, Eye, EyeOff } from "lucide-react";
 export function SignInForm() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
@@ -26,29 +24,68 @@ export function SignInForm() {
 
     startTransition(async () => {
       try {
-        const result = await signIn.email({
-          email,
-          password,
-          rememberMe: remember,
-        });
+        const result = await signIn.email(
+          {
+            email,
+            password,
+            rememberMe: remember,
+          },
+          {
+            onRequest: () => {
+              // Optional: bisa tambahkan loading state tambahan
+            },
+            onSuccess: () => {
+              toast.success("Welcome back!", {
+                description: "You have been signed in successfully.",
+              });
+              router.push("/admin");
+              router.refresh();
+            },
+            onError: (ctx) => {
+              // Better-auth error handling
+              toast.error("Login Failed", {
+                description:
+                  ctx.error.message ||
+                  "These credentials do not match our records.",
+              });
+            },
+          },
+        );
 
-        if (result.error) {
+        // Fallback check jika onError tidak terpanggil
+        if (result?.error) {
           toast.error("Login Failed", {
             description:
               result.error.message ||
               "These credentials do not match our records.",
           });
-        } else {
-          toast.success("Welcome back!", {
-            description: "You have been signed in successfully.",
-          });
-          router.push("/admin");
-          router.refresh();
         }
-      } catch {
-        toast.error("Error", {
-          description: "An error occurred. Please try again.",
-        });
+      } catch (error) {
+        // Log error untuk debugging di Vercel
+        console.error("Sign in error:", error);
+
+        // Cek tipe error untuk pesan yang lebih spesifik
+        if (error instanceof Error) {
+          if (error.message.includes("fetch")) {
+            toast.error("Connection Error", {
+              description:
+                "Unable to connect to the server. Please check your internet connection.",
+            });
+          } else if (error.message.includes("NetworkError")) {
+            toast.error("Network Error", {
+              description: "A network error occurred. Please try again.",
+            });
+          } else {
+            toast.error("Error", {
+              description:
+                error.message || "An error occurred. Please try again.",
+            });
+          }
+        } else {
+          toast.error("Error", {
+            description: "An unexpected error occurred. Please try again.",
+          });
+        }
       }
     });
   };
