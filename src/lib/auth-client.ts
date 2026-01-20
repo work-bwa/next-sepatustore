@@ -10,8 +10,8 @@ const getBaseURL = () => {
   }
 
   // Di server-side, gunakan URL lengkap
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL;
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    return process.env.NEXT_PUBLIC_BASE_URL;
   }
 
   // Fallback untuk Vercel
