@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
 export function SignInForm() {
   const router = useRouter();
@@ -167,7 +168,7 @@ export function SignInForm() {
       <Button type="submit" className="w-full" disabled={isPending}>
         {isPending ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Spinner />
             Signing in...
           </>
         ) : (
