@@ -10,6 +10,11 @@ interface EditProductTransactionPageProps {
   params: Promise<{ id: string }>;
 }
 
+export const metadata = {
+  title: "Edit Transaction | Admin Dashboard",
+  description: "Edit transaction product",
+};
+
 export default async function EditProductTransactionPage({
   params,
 }: EditProductTransactionPageProps) {

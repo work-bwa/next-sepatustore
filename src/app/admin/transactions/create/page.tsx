@@ -1,6 +1,11 @@
 import { getShoesForSelect, getPromoCodesForSelect } from "../actions";
 import { ProductTransactionForm } from "../components/product-transaction-form";
 
+export const metadata = {
+  title: "Add Transaction | Admin Dashboard",
+  description: "Add a new transaction product",
+};
+
 export default async function CreateProductTransactionPage() {
   const [shoes, promoCodes] = await Promise.all([
     getShoesForSelect(),

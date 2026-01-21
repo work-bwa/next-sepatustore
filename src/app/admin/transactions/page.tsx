@@ -9,6 +9,11 @@ interface PageProps {
   searchParams: Promise<{ search?: string }>;
 }
 
+export const metadata = {
+  title: "Transactions | Admin Dashboard",
+  description: "Manage shoe transactions",
+};
+
 export default async function ProductTransactionsPage({
   searchParams,
 }: PageProps) {
